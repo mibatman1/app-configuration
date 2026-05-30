@@ -1,8 +1,61 @@
+# ===================================================================
+# COMMON CONFIGURATION (Centralized in Config Server)
+# This file contains properties extracted from local services.
+# Use this content to update your GitHub config-repo:
+# https://github.com/mibatman1/app-configuration/blob/main/application.yaml
+# ===================================================================
+
+# Eureka Discovery
 eureka:
-    instance:
-        prefer-ip-address: true
-    client:
-        fetch-registry: true
-        register-with-eureka: true
-        service-url:
-            defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8080/eureka}
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: ${EUREKA_SERVER_ADDRESS:http://serviceregistery:8080/eureka/}
+
+# Logging & Tracing Pattern
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+# Actuator & Management
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  tracing:
+    sampling:
+      probability: 1.0
+    export:
+      enabled: true
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://jaeger:4318/v1/traces
+
+# RabbitMQ Shared Config
+spring:
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+
+  # JPA & Database Common Settings
+  datasource:
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
